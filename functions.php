@@ -51,7 +51,7 @@ function handlePage($pageHtml) {
   $len = count($id);
   $content = array();
   for ($i=0;$i<$len;$i++) {
-  	$content[] = array($id[$i], $title[$i], $category[$i], $auther[$i]);
+  	$content[] = array($id[$i], urlencode($title[$i]), urlencode($category[$i]), urlencode($auther[$i]));
   }
   return $content;
 }
@@ -74,11 +74,11 @@ function showPage($pageCont) {
 	for ($i=0;$i<$len;$i++) {
 		$mid = $mid.'
     <item>
-      <title>'.$pageCont[$i][1].'</title>
+      <title>'.urldecode($pageCont[$i][1]).'</title>
       <link>http://steamcn.com/forum.php?mod=viewthread&amp;tid='.$pageCont[$i][0].'</link>
-      <description><![CDATA['.$pageCont[$i][1].']]></description>
-      <category>'.$pageCont[$i][2].'</category>
-      <author>'.$pageCont[$i][3].'</author>
+      <description><![CDATA['.urldecode($pageCont[$i][1]).']]></description>
+      <category>'.urldecode($pageCont[$i][2]).'</category>
+      <author>'.urldecode($pageCont[$i][3]).'</author>
     </item>';
 	}
 	$bot = '
