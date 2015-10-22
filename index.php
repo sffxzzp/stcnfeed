@@ -59,7 +59,6 @@ if ($newTime-$oldTime>1) {
         sqlExec($sqlInfo, 'delete from list where tid = '.$oldData[$i][0].';');
     }
     for ($i=$newNum-1;$i>=0;$i--) {
-        echo $i;
         sqlExec($sqlInfo, 'insert into '.$tablelist.' (ID, tid, title, category, auther) values (0, '.$newData[$i][0].', "'.$newData[$i][1].'", "'.$newData[$i][2].'", "'.$newData[$i][3].'")');
     }
 }
