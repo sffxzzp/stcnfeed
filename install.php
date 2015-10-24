@@ -3,21 +3,27 @@ $file = 'config.php';
 require_once('functions.php');
 if (file_exists($file)) {
     require_once($file);
+    $sqlInfo = array(
+        "host"  =>  $host,
+        "user"  =>  $user,
+        "pwd"   =>  $pwd,
+        "db"    =>  $db
+    );
     if (isset($_GET["clear"])) {
         if ($_GET["clear"]==$pwd) {
-            $sqlInfo = array(
-                "host"  =>  $host,
-                "user"  =>  $user,
-                "pwd"   =>  $pwd,
-                "db"    =>  $db
-            );
             sqlExec($sqlInfo, 'truncate '.$tablelist.';');
             echo 'clear success!';
         }
     }
     else {
         if (isset($db)&&isset($host)&&isset($user)&isset($pwd)) {
-            echo 'install already success!';
+            if (!getData($sqlInfo, $tablelist)) {
+                sqlInit($sqlInfo, 'time', 'list');
+                echo 'reinit sql success!';
+            }
+            else {
+                echo 'install already success!';
+            }
         }
     }
 }
