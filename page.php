@@ -17,6 +17,8 @@ $sqlInfo = array(
 );
 if (isset($_GET["tid"])) {
     $pageCont = curl('http://steamcn.com/forum.php?mod=viewthread&tid='.$_GET["tid"]);
+    preg_match('/authorposton.+?span title=\"(.+?)\"/', $pageCont, $postTime);
+    $postTime = date(DATE_RFC822, strtotime($postTime[1].' +0800'));
     preg_match('/<table.+?>(<tr><td .+?t_f.+?>[\s\S]*?)<\/table/', $pageCont, $postCont);
     $postCont = preg_replace('/<ignore_js_op>[\s\S]*?<\/ignore_js_op>/', '', $postCont[1]);
     $postCont = str_replace('<br />', '', $postCont);
@@ -36,7 +38,13 @@ if (isset($_GET["tid"])) {
         sqlExec($sqlInfo, 'update '.$tablelist.' set description = "'.urlencode($postCont).'" where tid = '.$_GET["tid"].';');
     }
     else {
-        sqlExec($sqlInfo, 'update '.$tablelist.' set description = "Server can\'t fetch page data." where tid = '.$_GET["tid"]);
+        sqlExec($sqlInfo, 'update '.$tablelist.' set description = " " where tid = '.$_GET["tid"]);
+    }
+    if (strlen($postTime)>0) {
+        sqlExec($sqlInfo, 'update '.$tablelist.' set time = "'.urlencode($postTime).'" where tid = '.$_GET["tid"].';');
+    }
+    else {
+        sqlExec($sqlInfo, 'update '.$tablelist.' set time = "0" where tid = '.$_GET["tid"].';');
     }
 }
 ?>

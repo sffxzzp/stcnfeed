@@ -12,7 +12,9 @@ if (file_exists($file)) {
     if (isset($_GET["clear"])) {
         if ($_GET["clear"]==$pwd) {
             sqlExec($sqlInfo, 'truncate '.$tablelist.';');
-            echo 'clear success!';
+            echo 'clear success!<br>SQL Data re-initialized...<br>';
+            curl('http://'.$_SERVER['SERVER_NAME'].'/index.php?init');
+            echo '<a href="http://'.$_SERVER['SERVER_NAME'].'/">click me!</a>';
         }
     }
     else {

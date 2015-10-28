@@ -35,6 +35,7 @@ if ($newTime-$oldTime>60) {
     4. finally insert into database.
     ---------------------*/
     $oldData = getData($sqlInfo, $tablelist);
+    //considered speed and stable. the `handlePage` function would only return a 10-length array.
     $newData = handlePage(curl('http://steamcn.com/forum.php?mod=guide&view=newthread'));
     for ($i=0;$i<count($oldData);$i++) {
         for ($j=0;$j<count($newData);$j++) {
@@ -45,17 +46,26 @@ if ($newTime-$oldTime>60) {
         }
     }
     $newNum = count($newData);
-    for ($i=0;$i<$newNum;$i++) {
-        sqlExec($sqlInfo, 'delete from list where tid = '.$oldData[$i][0].';');
-    }
-    for ($i=$newNum-1;$i>=0;$i--) {
-        sqlExec($sqlInfo, 'insert into '.$tablelist.' (ID, tid, title, category, auther, description) values (0, '.$newData[$i][0].', "'.$newData[$i][1].'", "'.$newData[$i][2].'", "'.$newData[$i][3].'", "'.$newData[$i][4].'")');
-        popen('curl http://'.$_SERVER['SERVER_NAME'].'/page.php?tid='.$newData[$i][0], 'r');
-        //curl('http://'.$_SERVER['SERVER_NAME'].'/page.php?tid='.$newData[$i][0]);
+    if ($newNum>0) {
+        for ($i=0;$i<$newNum;$i++) {
+            sqlExec($sqlInfo, 'delete from list where tid = '.$oldData[$i][0].';');
+        }
+        for ($i=$newNum-1;$i>=0;$i--) {
+            sqlExec($sqlInfo, 'insert into '.$tablelist.' (ID, tid, title, category, auther, description, time) values (0, '.$newData[$i][0].', "'.$newData[$i][1].'", "'.$newData[$i][2].'", "'.$newData[$i][3].'", "'.$newData[$i][4].'", "'.$newData[$i][5].'")');
+            popen('curl --retry 3 http://'.$_SERVER['SERVER_NAME'].'/page.php?tid='.$newData[$i][0], 'r');
+            //curl('http://'.$_SERVER['SERVER_NAME'].'/page.php?tid='.$newData[$i][0]);
+        }
     }
 }
-//get data that saves in database.
-$oldData = getData($sqlInfo, $tablelist);
-//print data in rss format.
-showPage($oldData);
+//check if init from install.
+if (isset($_GET["init"])) {
+    echo 'data base init success!';
+}
+//if not
+else {
+    //get data that saves in database.
+    $oldData = getData($sqlInfo, $tablelist);
+    //print data in rss format.
+    showPage($oldData);
+}
 ?>

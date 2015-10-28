@@ -25,7 +25,7 @@ function sqlInit($sqlInfo, $tabletime, $tablelist) {
     return False;
   }
   $result = mysqli_query($conn,"CREATE TABLE " . $tabletime . "(ID INT Unique NOT NULL AUTO_INCREMENT, time INT)");
-  $result = mysqli_query($conn,"CREATE TABLE " . $tablelist . "(ID INT Unique NOT NULL AUTO_INCREMENT, tid INT, title TEXT, category TEXT, auther TEXT, description TEXT)");
+  $result = mysqli_query($conn,"CREATE TABLE " . $tablelist . "(ID INT Unique NOT NULL AUTO_INCREMENT, tid INT, title TEXT, category TEXT, auther TEXT, description TEXT, time TEXT)");
   mysqli_close($conn);
   return True;
 }
@@ -60,10 +60,9 @@ function handlePage($pageHtml) {
   $title = $title[1];
   $category = $category[1];
   $auther = $auther[1];
-  $len = count($id);
   $content = array();
-  for ($i=0;$i<$len;$i++) {
-  	$content[] = array($id[$i], urlencode($title[$i]), urlencode($category[$i]), urlencode($auther[$i]), '');
+  for ($i=0;$i<10;$i++) {
+  	$content[] = array($id[$i], urlencode($title[$i]), urlencode($category[$i]), urlencode($auther[$i]), '', '');
   }
   return $content;
 }
@@ -76,7 +75,8 @@ function showPage($pageCont) {
     <link>http://steamcn.com/forum.php?mod=guide&amp;view=newthread</link>
     <description>Recent</description>
     <generator>sffxzzp</generator>
-    <ttl>60</ttl>
+    <lastBuildDate>'.date(DATE_RFC822).'</lastBuildDate>
+    <ttl>1</ttl>
     <image>
       <url>http://steamcn.com/static/image/common/logo_88_31.gif</url>
       <title>SteamCN</title>
@@ -91,6 +91,7 @@ function showPage($pageCont) {
       <description><![CDATA['.urldecode($pageCont[$i][4]).']]></description>
       <category>'.urldecode($pageCont[$i][2]).'</category>
       <author>'.urldecode($pageCont[$i][3]).'</author>
+      <pubDate>'.urldecode($pageCont[$i][5]).'</pubDate>
     </item>';
 	}
 	$bot = '
