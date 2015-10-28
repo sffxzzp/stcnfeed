@@ -16,12 +16,13 @@ $sqlInfo = array(
     "pwd"   =>  $pwd,
     "db"    =>  $db
 );
+date_default_timezone_set('Asia/Shanghai');
 //check time
 $oldTime = mysqli_fetch_array(sqlExec($sqlInfo, "SELECT * FROM ".$tabletime));
 $oldTime = intval($oldTime["time"]);
 $newTime = time();
 //if timediff > 1m, compare old to new, del all old **outdated** data.
-if ($newTime-$oldTime>60) {
+if ($newTime-$oldTime>1) {
     //record new timestamp;
     sqlExec($sqlInfo, "truncate table ".$tabletime);
     sqlExec($sqlInfo, "insert into ".$tabletime." (ID, time) values (0, ".$newTime.")");
@@ -45,11 +46,13 @@ if ($newTime-$oldTime>60) {
             }
         }
     }
-    $newNum = count($newData);
-    if ($newNum>0) {
-        for ($i=0;$i<$newNum;$i++) {
+    for ($i=0;$i<count($oldData);$i++) {
+        if (strtotime(urldecode($oldData[$i][5]))<$newTime-86400) {
             sqlExec($sqlInfo, 'delete from list where tid = '.$oldData[$i][0].';');
         }
+    }
+    $newNum = count($newData);
+    if ($newNum>0) {
         for ($i=$newNum-1;$i>=0;$i--) {
             sqlExec($sqlInfo, 'insert into '.$tablelist.' (ID, tid, title, category, auther, description, time) values (0, '.$newData[$i][0].', "'.$newData[$i][1].'", "'.$newData[$i][2].'", "'.$newData[$i][3].'", "'.$newData[$i][4].'", "'.$newData[$i][5].'")');
             popen('curl --retry 3 http://'.$_SERVER['SERVER_NAME'].'/page.php?tid='.$newData[$i][0], 'r');
