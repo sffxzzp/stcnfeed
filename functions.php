@@ -1,18 +1,18 @@
 <?php 
 function curl($url, $referer="", $useragent="", $header=array(), $post=0, $post_data="") {
-	$curl = curl_init();
-	curl_setopt($curl, CURLOPT_URL, $url);
-	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 3);
-	curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 15);
-	curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
-	curl_setopt ($curl, CURLOPT_REFERER, $referer);
-	curl_setopt($curl, CURLOPT_USERAGENT, $useragent);
-	if ($post==1) {
-	  curl_setopt($curl, CURLOPT_POST, 1);
-	  curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
-	}
-	$src = curl_exec($curl);
-	curl_close($curl);
+    $curl = curl_init();
+    curl_setopt($curl, CURLOPT_URL, $url);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, 3);
+    curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 15);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
+    curl_setopt ($curl, CURLOPT_REFERER, $referer);
+    curl_setopt($curl, CURLOPT_USERAGENT, $useragent);
+    if ($post==1) {
+      curl_setopt($curl, CURLOPT_POST, 1);
+      curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
+    }
+    $src = curl_exec($curl);
+    curl_close($curl);
   return $src;
 }
 function delArray(&$arr, $offset) {
@@ -67,8 +67,8 @@ function handlePage($pageHtml) {
   return $content;
 }
 function showPage($pageCont) {
-	$len = count($pageCont);
-	$top = '<?xml version="1.0" encoding="gbk"?>
+    $len = count($pageCont);
+    $top = '<?xml version="1.0" encoding="gbk"?>
 <rss version="2.0">
   <channel>
     <title>SteamCN New</title>
@@ -82,21 +82,21 @@ function showPage($pageCont) {
       <title>SteamCN</title>
       <link>http://steamcn.com/</link>
     </image>';
-	$mid = '';
-	for ($i=$len-1;$i>=0;$i--) {
-		$mid = $mid.'
+    $mid = '';
+    for ($i=$len-1;$i>=0;$i--) {
+        $mid = $mid.'
     <item>
       <title>'.urldecode($pageCont[$i][1]).'</title>
-      <link>http://steamcn.com/forum.php?mod=viewthread&amp;tid='.$pageCont[$i][0].'</link>
+      <link>http://'.$_SERVER['HTTP_HOST'].'/page.php?tid='.$pageCont[$i][0].'</link>
       <description><![CDATA['.urldecode($pageCont[$i][4]).']]></description>
       <category>'.urldecode($pageCont[$i][2]).'</category>
       <author>'.urldecode($pageCont[$i][3]).'</author>
       <pubDate>'.urldecode($pageCont[$i][5]).'</pubDate>
     </item>';
-	}
-	$bot = '
+    }
+    $bot = '
   </channel>
 </rss>';
-	echo $top.$mid.$bot;
+    echo $top.$mid.$bot;
 }
 ?>

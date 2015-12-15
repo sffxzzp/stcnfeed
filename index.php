@@ -55,7 +55,10 @@ if ($newTime-$oldTime>1) {
     if ($newNum>0) {
         for ($i=$newNum-1;$i>=0;$i--) {
             sqlExec($sqlInfo, 'insert into '.$tablelist.' (ID, tid, title, category, auther, description, time) values (0, '.$newData[$i][0].', "'.$newData[$i][1].'", "'.$newData[$i][2].'", "'.$newData[$i][3].'", "'.$newData[$i][4].'", "'.$newData[$i][5].'")');
-            popen('curl --retry 3 http://'.$_SERVER['SERVER_NAME'].'/page.php?tid='.$newData[$i][0], 'r');
+            //if server is strong enough you could del the //.
+            //del // in next line if you are using Linux.
+            popen('curl http://'.$_SERVER['SERVER_NAME'].'/page.php?tid='.$newData[$i][0], 'r');
+            //del // in next line if you are using Win / not sure what sys you are using.
             //curl('http://'.$_SERVER['SERVER_NAME'].'/page.php?tid='.$newData[$i][0]);
         }
     }
