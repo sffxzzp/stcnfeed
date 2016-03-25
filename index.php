@@ -16,13 +16,12 @@ $sqlInfo = array(
     "pwd"   =>  $pwd,
     "db"    =>  $db
 );
-date_default_timezone_set('Asia/Shanghai');
 //check time
 $oldTime = mysqli_fetch_array(sqlExec($sqlInfo, "SELECT * FROM ".$tabletime));
 $oldTime = intval($oldTime["time"]);
 $newTime = time();
 //if timediff > 1m, compare old to new, del all old **outdated** data.
-if ($newTime-$oldTime>1) {
+if ($newTime-$oldTime>59) {
     //record new timestamp;
     sqlExec($sqlInfo, "truncate table ".$tabletime);
     sqlExec($sqlInfo, "insert into ".$tabletime." (ID, time) values (0, ".$newTime.")");

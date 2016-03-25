@@ -1,4 +1,5 @@
 <?php 
+date_default_timezone_set('Asia/Shanghai');
 function curl($url, $referer="", $useragent="", $header=array(), $post=0, $post_data="") {
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $url);
@@ -53,7 +54,7 @@ function getData($sqlInfo, $tablelist) {
 }
 function handlePage($pageHtml) {
   preg_match_all('/normalthread_(\d*)/', $pageHtml, $id);
-  preg_match_all('/class="xst" >(.+?)</', $pageHtml, $title);
+  preg_match_all('/class="xst.+?>(.+?)</', $pageHtml, $title);
   preg_match_all('/target="_blank">(.+?)<\/a><\/td>/', $pageHtml, $category);
   preg_match_all('/\"suid-\d*\" c=\"1\">(.+?)<\/a><\/cite>/', $pageHtml, $auther);
   $id = $id[1];
@@ -62,13 +63,16 @@ function handlePage($pageHtml) {
   $auther = $auther[1];
   $content = array();
   for ($i=0;$i<10;$i++) {
-  	$content[] = array($id[$i], urlencode($title[$i]), urlencode($category[$i]), urlencode($auther[$i]), '', '');
+    $title[$i] = mb_convert_encoding($title[$i], 'utf-8', 'gbk');
+    $category[$i] = mb_convert_encoding($category[$i], 'utf-8', 'gbk');
+    $auther[$i] = mb_convert_encoding($auther[$i], 'utf-8', 'gbk');
+    $content[] = array($id[$i], urlencode($title[$i]), urlencode($category[$i]), urlencode($auther[$i]), '', '');
   }
   return $content;
 }
 function showPage($pageCont) {
     $len = count($pageCont);
-    $top = '<?xml version="1.0" encoding="gbk"?>
+    $top = '<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
   <channel>
     <title>SteamCN New</title>

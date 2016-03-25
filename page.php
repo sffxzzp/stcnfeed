@@ -40,6 +40,7 @@ if (isset($_GET["tid"])) {
     $postCont = str_replace('||', '|', $postCont);
     $postCont = str_replace('|', '<br />', $postCont);
     $postCont = preg_replace('/\n/', '', $postCont);
+    $postCont = mb_convert_encoding($postCont, 'utf-8', 'gbk');
     if (strlen($postCont)>0) {
         sqlExec($sqlInfo, 'update '.$tablelist.' set description = "'.urlencode($postCont).'" where tid = '.$_GET["tid"].';');
     }
@@ -52,6 +53,6 @@ if (isset($_GET["tid"])) {
     else {
         sqlExec($sqlInfo, 'update '.$tablelist.' set time = "0" where tid = '.$_GET["tid"].';');
     }
-    echo '<html><head><meta http-equiv="Content-Type" content="text/html; charset=gbk"></head><body><a href="http://steamcn.com/t'.$_GET["tid"].'-1-1">http://steamcn.com/t'.$_GET["tid"].'-1-1</a><br>'.$postCont.'</body></html>';
+    echo '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><a href="http://steamcn.com/t'.$_GET["tid"].'-1-1">http://steamcn.com/t'.$_GET["tid"].'-1-1</a><br>'.$postCont.'</body></html>';
 }
 ?>

@@ -10,7 +10,7 @@ if (file_exists($file)) {
         "db"    =>  $db
     );
     if (isset($_GET["clear"])) {
-        if ($_GET["clear"]==$pwd) {
+        if ($_GET["clear"]=='true') {
             sqlExec($sqlInfo, 'truncate '.$tablelist.';');
             echo 'clear success!<br>SQL Data re-initialized...<br>';
             curl('http://'.$_SERVER['SERVER_NAME'].'/index.php?init');
