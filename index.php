@@ -1,21 +1,32 @@
 <?php 
 //error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 require_once('functions.php');
-if (file_exists('config.php')) {
-    require_once('config.php');
-    if (!isset($db)&&!isset($host)&&!isset($user)&!isset($pwd)) {
-        header("location:install.php");
-    }
-}
-else {
-    header("location:install.php");
-}
+require_once('config.php');
 $sqlInfo = array(
     "host"  =>  $host,
     "user"  =>  $user,
     "pwd"   =>  $pwd,
     "db"    =>  $db
 );
+//check if reinit.
+if ($_GET["reinit"]=="true") {
+    sqlExec($sqlInfo, "truncate table ".$tabletime);
+    sqlExec($sqlInfo, "truncate table ".$tablelist);
+    echo 'reinit complete!';
+    return True;
+}
+//check if init.
+if ($_GET["install"]=="init") {
+    sqlInit($sqlInfo, $tabletime, $tablelist);
+    return True;
+}
+//if not
+else {
+    //get data that saves in database.
+    $oldData = getData($sqlInfo, $tablelist);
+    //print data in rss format.
+    showPage($oldData, $installpath);
+}
 //check time
 $oldTime = mysqli_fetch_array(sqlExec($sqlInfo, "SELECT * FROM ".$tabletime));
 $oldTime = intval($oldTime["time"]);
@@ -47,7 +58,7 @@ if ($newTime-$oldTime>59) {
     }
     for ($i=0;$i<count($oldData);$i++) {
         if (strtotime(urldecode($oldData[$i][5]))<$newTime-86400) {
-            sqlExec($sqlInfo, 'delete from list where tid = '.$oldData[$i][0].';');
+            sqlExec($sqlInfo, 'delete from '.$tablelist.' where tid = '.$oldData[$i][0].';');
         }
     }
     $newNum = count($newData);
@@ -56,21 +67,10 @@ if ($newTime-$oldTime>59) {
             sqlExec($sqlInfo, 'insert into '.$tablelist.' (ID, tid, title, category, auther, description, time) values (0, '.$newData[$i][0].', "'.$newData[$i][1].'", "'.$newData[$i][2].'", "'.$newData[$i][3].'", "'.$newData[$i][4].'", "'.$newData[$i][5].'")');
             //if server is strong enough you could del the //.
             //del // in next line if you are using Linux.
-            popen('curl http://'.$_SERVER['SERVER_NAME'].'/page.php?tid='.$newData[$i][0], 'r');
+            popen('curl http://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0], 'r');
             //del // in next line if you are using Win / not sure what sys you are using.
-            //curl('http://'.$_SERVER['SERVER_NAME'].'/page.php?tid='.$newData[$i][0]);
+            //curl('http://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0]);
         }
     }
-}
-//check if init from install.
-if (isset($_GET["init"])) {
-    echo 'data base init success!';
-}
-//if not
-else {
-    //get data that saves in database.
-    $oldData = getData($sqlInfo, $tablelist);
-    //print data in rss format.
-    showPage($oldData);
 }
 ?>

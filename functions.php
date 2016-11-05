@@ -28,6 +28,7 @@ function sqlInit($sqlInfo, $tabletime, $tablelist) {
   $result = mysqli_query($conn,"CREATE TABLE " . $tabletime . "(ID INT Unique NOT NULL AUTO_INCREMENT, time INT)");
   $result = mysqli_query($conn,"CREATE TABLE " . $tablelist . "(ID INT Unique NOT NULL AUTO_INCREMENT, tid INT, title TEXT, category TEXT, auther TEXT, description TEXT, time TEXT)");
   mysqli_close($conn);
+  echo "数据库初始化成功！";
   return True;
 }
 function sqlExec($sqlInfo, $command) {
@@ -70,7 +71,7 @@ function handlePage($pageHtml) {
   }
   return $content;
 }
-function showPage($pageCont) {
+function showPage($pageCont,$installpath) {
     $len = count($pageCont);
     $top = '<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
@@ -91,7 +92,7 @@ function showPage($pageCont) {
         $mid = $mid.'
     <item>
       <title>'.urldecode($pageCont[$i][1]).'</title>
-      <link>http://'.$_SERVER['HTTP_HOST'].'/page.php?tid='.$pageCont[$i][0].'</link>
+      <link>http://'.$_SERVER['HTTP_HOST'].$installpath.'/page.php?tid='.$pageCont[$i][0].'</link>
       <description><![CDATA['.urldecode($pageCont[$i][4]).']]></description>
       <category>'.urldecode($pageCont[$i][2]).'</category>
       <author>'.urldecode($pageCont[$i][3]).'</author>
