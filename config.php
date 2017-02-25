@@ -1,8 +1,8 @@
 <?php
-$db = 'steamcn';
-$host = 'localhost';
-$user = 'sffxzzp';
-$pwd = '';
+$db = 'Database';
+$host = 'Database_IP';
+$user = 'DB_UserName';
+$pwd = 'DB_PassWord';
 //---------------
 $prefix = 'stcn_';
 $tabletime = $prefix.'time';
