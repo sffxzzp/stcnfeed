@@ -47,7 +47,7 @@ if ($newTime-$oldTime>59) {
     ---------------------*/
     $oldData = getData($sqlInfo, $tablelist);
     //considered speed and stable. the `handlePage` function would only return a 10-length array.
-    $newData = handlePage(curl('http://steamcn.com/forum.php?mod=guide&view=newthread'));
+    $newData = handlePage(curl('https://steamcn.com/forum.php?mod=guide&view=newthread'));
     for ($i=0;$i<count($oldData);$i++) {
         for ($j=0;$j<count($newData);$j++) {
             if ($newData[$j][0]==$oldData[$i][0]) {
@@ -67,9 +67,9 @@ if ($newTime-$oldTime>59) {
             sqlExec($sqlInfo, 'insert into '.$tablelist.' (ID, tid, title, category, auther, description, time) values (0, '.$newData[$i][0].', "'.$newData[$i][1].'", "'.$newData[$i][2].'", "'.$newData[$i][3].'", "'.$newData[$i][4].'", "'.$newData[$i][5].'")');
             //if server is strong enough you could del the //.
             //del // in next line if you are using Linux.
-            popen('curl http://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0], 'r');
+            popen('curl '.$_SERVER['HTTP_X_FORWARDED_PROTO'].'://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0], 'r');
             //del // in next line if you are using Win / not sure what sys you are using.
-            //curl('http://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0]);
+            //curl($_SERVER['HTTP_X_FORWARDED_PROTO'].'://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0]);
         }
     }
 }

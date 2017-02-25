@@ -1,5 +1,6 @@
 <?php 
 date_default_timezone_set('Asia/Shanghai');
+require_once('config.php');
 function curl($url, $referer="", $useragent="", $header=array(), $post=0, $post_data="") {
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $url);
@@ -63,11 +64,12 @@ function handlePage($pageHtml) {
   $category = $category[1];
   $auther = $auther[1];
   $content = array();
+  $timeText = date('D, d M y H:i:s +0800', time());
   for ($i=0;$i<10;$i++) {
     $title[$i] = mb_convert_encoding($title[$i], 'utf-8', 'gbk');
     $category[$i] = mb_convert_encoding($category[$i], 'utf-8', 'gbk');
     $auther[$i] = mb_convert_encoding($auther[$i], 'utf-8', 'gbk');
-    $content[] = array($id[$i], urlencode($title[$i]), urlencode($category[$i]), urlencode($auther[$i]), '', '');
+    $content[] = array($id[$i], urlencode($title[$i]), urlencode($category[$i]), urlencode($auther[$i]), '', urlencode($timeText));
   }
   return $content;
 }
@@ -77,22 +79,22 @@ function showPage($pageCont,$installpath) {
 <rss version="2.0">
   <channel>
     <title>SteamCN New</title>
-    <link>http://steamcn.com/forum.php?mod=guide&amp;view=newthread</link>
+    <link>https://steamcn.com/forum.php?mod=guide&amp;view=newthread</link>
     <description>Recent</description>
     <generator>sffxzzp</generator>
     <lastBuildDate>'.date(DATE_RFC822).'</lastBuildDate>
     <ttl>1</ttl>
     <image>
-      <url>http://steamcn.com/static/image/common/logo_88_31.gif</url>
+      <url>https://steamcn.com/static/image/common/logo_88_31.gif</url>
       <title>SteamCN</title>
-      <link>http://steamcn.com/</link>
+      <link>https://steamcn.com/</link>
     </image>';
     $mid = '';
     for ($i=$len-1;$i>=0;$i--) {
         $mid = $mid.'
     <item>
       <title>'.urldecode($pageCont[$i][1]).'</title>
-      <link>http://'.$_SERVER['HTTP_HOST'].$installpath.'/page.php?tid='.$pageCont[$i][0].'</link>
+      <link>'.$_SERVER['HTTP_X_FORWARDED_PROTO'].'://'.$_SERVER['HTTP_HOST'].$installpath.'/page.php?tid='.$pageCont[$i][0].'</link>
       <description><![CDATA['.urldecode($pageCont[$i][4]).']]></description>
       <category>'.urldecode($pageCont[$i][2]).'</category>
       <author>'.urldecode($pageCont[$i][3]).'</author>

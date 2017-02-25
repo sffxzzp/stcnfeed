@@ -1,8 +1,8 @@
 <?php
-$db = 'Database';
-$host = 'Database_IP';
-$user = 'DB_UserName';
-$pwd = 'DB_PassWord';
+$db = 'steamcn';
+$host = 'localhost';
+$user = 'sffxzzp';
+$pwd = '';
 //---------------
 $prefix = 'stcn_';
 $tabletime = $prefix.'time';
@@ -14,4 +14,3 @@ $tablelist = $prefix.'list';
 //       you should set $installpath to '/steam/feed'
 //---------------
 $installpath = '';
-?>
