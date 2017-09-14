@@ -21,6 +21,8 @@ if (isset($_GET["tid"])) {
     $postTime = date(DATE_RFC822, strtotime($postTime[1].' +0800'));
     preg_match('/t_f.+?>([\s\S]*?)<\/table/', $pageCont, $postCont);
     $postCont = preg_replace('/<ignore_js_op>[\s\S]*?<\/ignore_js_op>/', '', $postCont[1]);
+    $postCont = str_replace('<div class="showhide">', '<br /><div class="showhide">', $postCont);
+    $postCont = preg_replace('/<script.+?>[\s\S]*?<\/script>/', '', $postCont);
     $postCont = str_replace('<br />', '|', $postCont);
     $postCont = preg_replace('/<i class=\"pstatus\">.*?<\/i>/', '', $postCont);
     $postCont = preg_replace('/style>.+?<\/style>/', '', $postCont);
@@ -40,7 +42,6 @@ if (isset($_GET["tid"])) {
     $postCont = str_replace('||', '|', $postCont);
     $postCont = str_replace('|', '<br />', $postCont);
     $postCont = preg_replace('/\n/', '', $postCont);
-    $postCont = mb_convert_encoding($postCont, 'utf-8', 'gbk');
     if (strlen($postCont)>0) {
         sqlExec($sqlInfo, 'update '.$tablelist.' set description = "'.urlencode($postCont).'" where tid = '.$_GET["tid"].';');
     }

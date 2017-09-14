@@ -1,7 +1,7 @@
 <?php 
 date_default_timezone_set('Asia/Shanghai');
 require_once('config.php');
-function curl($url, $referer="", $useragent="", $header=array(), $post=0, $post_data="") {
+function curl($url, $referer="https://steamcn.com/", $useragent="Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36", $header=array(), $post=0, $post_data="") {
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 3);
@@ -9,13 +9,14 @@ function curl($url, $referer="", $useragent="", $header=array(), $post=0, $post_
     curl_setopt($curl, CURLOPT_HTTPHEADER, $header);
     curl_setopt ($curl, CURLOPT_REFERER, $referer);
     curl_setopt($curl, CURLOPT_USERAGENT, $useragent);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
     if ($post==1) {
       curl_setopt($curl, CURLOPT_POST, 1);
       curl_setopt($curl, CURLOPT_POSTFIELDS, $post_data);
     }
     $src = curl_exec($curl);
     curl_close($curl);
-  return $src;
+    return $src;
 }
 function delArray(&$arr, $offset) {
   array_splice($arr, $offset, 1);
@@ -66,9 +67,6 @@ function handlePage($pageHtml) {
   $content = array();
   $timeText = date('D, d M y H:i:s +0800', time());
   for ($i=0;$i<10;$i++) {
-    $title[$i] = mb_convert_encoding($title[$i], 'utf-8', 'gbk');
-    $category[$i] = mb_convert_encoding($category[$i], 'utf-8', 'gbk');
-    $auther[$i] = mb_convert_encoding($auther[$i], 'utf-8', 'gbk');
     $content[] = array($id[$i], urlencode($title[$i]), urlencode($category[$i]), urlencode($auther[$i]), '', urlencode($timeText));
   }
   return $content;
@@ -94,7 +92,7 @@ function showPage($pageCont,$installpath) {
         $mid = $mid.'
     <item>
       <title>'.urldecode($pageCont[$i][1]).'</title>
-      <link>'.$_SERVER['HTTP_X_FORWARDED_PROTO'].'://'.$_SERVER['HTTP_HOST'].$installpath.'/page.php?tid='.$pageCont[$i][0].'</link>
+      <link>http://'.$_SERVER['HTTP_HOST'].$installpath.'/page.php?tid='.$pageCont[$i][0].'</link>
       <description><![CDATA['.urldecode($pageCont[$i][4]).']]></description>
       <category>'.urldecode($pageCont[$i][2]).'</category>
       <author>'.urldecode($pageCont[$i][3]).'</author>

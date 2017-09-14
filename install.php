@@ -20,7 +20,7 @@ if (file_exists($file)) {
     else {
         if (isset($db)&&isset($host)&&isset($user)&isset($pwd)) {
             if (!getData($sqlInfo, $tablelist)) {
-                sqlInit($sqlInfo, 'time', 'list');
+                sqlInit($sqlInfo, 'stcn_time', 'stcn_list');
                 echo 'reinit sql success!';
             }
             else {

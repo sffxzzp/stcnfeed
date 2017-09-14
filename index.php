@@ -1,5 +1,6 @@
 <?php 
 //error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
+header("Content-type: text/html; charset=utf-8");
 require_once('functions.php');
 require_once('config.php');
 $sqlInfo = array(
@@ -9,14 +10,14 @@ $sqlInfo = array(
     "db"    =>  $db
 );
 //check if reinit.
-if ($_GET["reinit"]=="true") {
+if (isset($_GET["reinit"]) && $_GET["reinit"]=="true") {
     sqlExec($sqlInfo, "truncate table ".$tabletime);
     sqlExec($sqlInfo, "truncate table ".$tablelist);
     echo 'reinit complete!';
     return True;
 }
 //check if init.
-if ($_GET["install"]=="init") {
+if (isset($_GET["install"]) && $_GET["install"]=="init") {
     sqlInit($sqlInfo, $tabletime, $tablelist);
     return True;
 }
@@ -28,11 +29,17 @@ else {
     showPage($oldData, $installpath);
 }
 //check time
-$oldTime = mysqli_fetch_array(sqlExec($sqlInfo, "SELECT * FROM ".$tabletime));
-$oldTime = intval($oldTime["time"]);
+$oldTime = sqlExec($sqlInfo, "SELECT * FROM ".$tabletime);
+if ($oldTime) {
+    $oldTime = mysqli_fetch_array($oldTime);
+    $oldTime = intval($oldTime["time"]);
+}
+else {
+    $oldTime = 0;
+}
 $newTime = time();
 //if timediff > 1m, compare old to new, del all old **outdated** data.
-if ($newTime-$oldTime>59) {
+if ($newTime-$oldTime>1) {
     //record new timestamp;
     sqlExec($sqlInfo, "truncate table ".$tabletime);
     sqlExec($sqlInfo, "insert into ".$tabletime." (ID, time) values (0, ".$newTime.")");
@@ -67,9 +74,11 @@ if ($newTime-$oldTime>59) {
             sqlExec($sqlInfo, 'insert into '.$tablelist.' (ID, tid, title, category, auther, description, time) values (0, '.$newData[$i][0].', "'.$newData[$i][1].'", "'.$newData[$i][2].'", "'.$newData[$i][3].'", "'.$newData[$i][4].'", "'.$newData[$i][5].'")');
             //if server is strong enough you could del the //.
             //del // in next line if you are using Linux.
-            popen('curl '.$_SERVER['HTTP_X_FORWARDED_PROTO'].'://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0], 'r');
+            //popen('curl http://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0], 'r');
+            //popen('curl https://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0], 'r');
             //del // in next line if you are using Win / not sure what sys you are using.
-            //curl($_SERVER['HTTP_X_FORWARDED_PROTO'].'://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0]);
+            curl('http://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0]);
+            //curl('https://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0]);
         }
     }
 }
