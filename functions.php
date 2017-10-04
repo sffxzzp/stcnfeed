@@ -28,7 +28,7 @@ function sqlInit($sqlInfo, $tabletime, $tablelist) {
     return False;
   }
   $result = mysqli_query($conn,"CREATE TABLE " . $tabletime . "(ID INT Unique NOT NULL AUTO_INCREMENT, time INT)");
-  $result = mysqli_query($conn,"CREATE TABLE " . $tablelist . "(ID INT Unique NOT NULL AUTO_INCREMENT, tid INT, title TEXT, category TEXT, auther TEXT, description TEXT, time TEXT)");
+  $result = mysqli_query($conn,"CREATE TABLE " . $tablelist . "(ID INT Unique NOT NULL AUTO_INCREMENT, tid INT, title TEXT, category TEXT, auther TEXT, description LONGTEXT, time TEXT)");
   mysqli_close($conn);
   echo "数据库初始化成功！";
   return True;
