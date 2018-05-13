@@ -18,43 +18,6 @@ function curl($url, $referer="https://steamcn.com/", $useragent="Mozilla/5.0 (Wi
     curl_close($curl);
     return $src;
 }
-function delArray(&$arr, $offset) {
-  array_splice($arr, $offset, 1);
-}
-function sqlInit($sqlInfo, $tabletime, $tablelist) {
-  $conn = mysqli_connect($sqlInfo["host"], $sqlInfo["user"], $sqlInfo["pwd"], $sqlInfo["db"]);
-  if (mysqli_connect_errno($conn)) {
-    echo "连接到 MySQL 服务器失败：" . mysqli_connect_error();
-    return False;
-  }
-  $result = mysqli_query($conn,"CREATE TABLE " . $tabletime . "(ID INT Unique NOT NULL AUTO_INCREMENT, time INT)");
-  $result = mysqli_query($conn,"CREATE TABLE " . $tablelist . "(ID INT Unique NOT NULL AUTO_INCREMENT, tid INT, title TEXT, category TEXT, auther TEXT, description LONGTEXT, time TEXT)");
-  mysqli_close($conn);
-  echo "数据库初始化成功！";
-  return True;
-}
-function sqlExec($sqlInfo, $command) {
-  $conn = mysqli_connect($sqlInfo["host"], $sqlInfo["user"], $sqlInfo["pwd"], $sqlInfo["db"]);
-  if (mysqli_connect_errno($conn)) {
-    echo "连接到 MySQL 服务器失败：" . mysqli_connect_error();
-    return False;
-  }
-  $result = mysqli_query($conn, $command);
-  mysqli_close($conn);
-  return $result;
-}
-function getData($sqlInfo, $tablelist) {
-  $Data = sqlExec($sqlInfo, "SELECT * FROM ".$tablelist);
-  if ($Data == False) {return False;}
-  $oldData = array();
-  while ($row = mysqli_fetch_array($Data)) {
-    $delNum = count($row)/2;
-    for ($i=0;$i<$delNum;$i++) {delArray($row, $i+1);}
-    delArray($row, 0);
-    $oldData[] = $row;
-  }
-  return $oldData;
-}
 function handlePage($pageHtml) {
   preg_match_all('/normalthread_(\d*)/', $pageHtml, $id);
   preg_match_all('/class="xst.+?>(.+?)</', $pageHtml, $title);
@@ -92,8 +55,8 @@ function showPage($pageCont,$installpath) {
         $mid = $mid.'
     <item>
       <title>'.urldecode($pageCont[$i][1]).'</title>
-      <link>http://'.$_SERVER['HTTP_HOST'].$installpath.'/page.php?tid='.$pageCont[$i][0].'</link>
-      <description><![CDATA['.urldecode($pageCont[$i][4]).']]></description>
+      <link>https://'.$_SERVER['HTTP_HOST'].$installpath.'/page.php?tid='.$pageCont[$i][0].'</link>
+      <description><![CDATA['.curl('https://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?pure=1&tid='.$pageCont[$i][0]).']]></description>
       <category>'.urldecode($pageCont[$i][2]).'</category>
       <author>'.urldecode($pageCont[$i][3]).'</author>
       <pubDate>'.urldecode($pageCont[$i][5]).'</pubDate>

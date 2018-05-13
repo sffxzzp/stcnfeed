@@ -1,20 +1,7 @@
 <?php
+error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
 require_once('functions.php');
-if (file_exists('config.php')) {
-    require_once('config.php');
-    if (!isset($db)&&!isset($host)&&!isset($user)&!isset($pwd)) {
-        header("location:install.php");
-    }
-}
-else {
-    header("location:install.php");
-}
-$sqlInfo = array(
-    "host"  =>  $host,
-    "user"  =>  $user,
-    "pwd"   =>  $pwd,
-    "db"    =>  $db
-);
+
 if (isset($_GET["tid"])) {
     $pageCont = curl('https://steamcn.com/forum.php?mod=viewthread&tid='.$_GET["tid"]);
     preg_match('/authorposton.+?span title=\"(.+?)\"/', $pageCont, $postTime);
@@ -42,18 +29,11 @@ if (isset($_GET["tid"])) {
     $postCont = str_replace('||', '|', $postCont);
     $postCont = str_replace('|', '<br />', $postCont);
     $postCont = preg_replace('/\n/', '', $postCont);
-    if (strlen($postCont)>0) {
-        sqlExec($sqlInfo, 'update '.$tablelist.' set description = "'.urlencode($postCont).'" where tid = '.$_GET["tid"].';');
+    if (isset($_GET["pure"])) {
+        echo $postCont;
     }
     else {
-        sqlExec($sqlInfo, 'update '.$tablelist.' set description = " " where tid = '.$_GET["tid"]);
+        echo '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><a href="https://steamcn.com/t'.$_GET["tid"].'-1-1">https://steamcn.com/t'.$_GET["tid"].'-1-1</a><br>'.$postCont.'</body></html>';
     }
-    if (strlen($postTime)>0) {
-        sqlExec($sqlInfo, 'update '.$tablelist.' set time = "'.urlencode($postTime).'" where tid = '.$_GET["tid"].';');
-    }
-    else {
-        sqlExec($sqlInfo, 'update '.$tablelist.' set time = "0" where tid = '.$_GET["tid"].';');
-    }
-    echo '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><a href="https://steamcn.com/t'.$_GET["tid"].'-1-1">https://steamcn.com/t'.$_GET["tid"].'-1-1</a><br>'.$postCont.'</body></html>';
 }
 ?>
