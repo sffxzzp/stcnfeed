@@ -1,6 +1,6 @@
 <?php 
 //error_reporting(E_ALL & ~E_NOTICE & ~E_WARNING);
-header("Content-type: text/html; charset=utf-8");
+//header("Content-type: text/html; charset=utf-8");
 require_once('functions.php');
 require_once('config.php');
 $sqlInfo = array(
@@ -54,7 +54,7 @@ if ($newTime-$oldTime>1) {
     ---------------------*/
     $oldData = getData($sqlInfo, $tablelist);
     //considered speed and stable. the `handlePage` function would only return a 10-length array.
-    $newData = handlePage(curl('https://steamcn.com/forum.php?mod=guide&view=newthread'));
+    $newData = handlePage(curl('https://keylol.com/forum.php?mod=guide&view=newthread'));
     for ($i=0;$i<count($oldData);$i++) {
         for ($j=0;$j<count($newData);$j++) {
             if ($newData[$j][0]==$oldData[$i][0]) {
@@ -75,9 +75,9 @@ if ($newTime-$oldTime>1) {
             //if server is strong enough you could del the //.
             //del // in next line if you are using Linux.
             //popen('curl http://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0], 'r');
-            //popen('curl https://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0], 'r');
+            popen('curl https://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0], 'r');
             //del // in next line if you are using Win / not sure what sys you are using.
-            curl('http://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0]);
+            //curl('http://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0]);
             //curl('https://'.$_SERVER['SERVER_NAME'].$installpath.'/page.php?tid='.$newData[$i][0]);
         }
     }

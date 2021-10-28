@@ -1,7 +1,8 @@
 <?php 
 date_default_timezone_set('Asia/Shanghai');
 require_once('config.php');
-function curl($url, $referer="https://steamcn.com/", $useragent="Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36", $header=array(), $post=0, $post_data="") {
+require_once('rss.php');
+function curl($url, $referer="https://keylol.com/", $useragent="Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/46.0.2490.71 Safari/537.36", $header=array(), $post=0, $post_data="") {
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 3);
@@ -23,7 +24,7 @@ function delArray(&$arr, $offset) {
 }
 function sqlInit($sqlInfo, $tabletime, $tablelist) {
   $conn = mysqli_connect($sqlInfo["host"], $sqlInfo["user"], $sqlInfo["pwd"], $sqlInfo["db"]);
-  if (mysqli_connect_errno($conn)) {
+  if (!$conn) {
     echo "连接到 MySQL 服务器失败：" . mysqli_connect_error();
     return False;
   }
@@ -35,7 +36,7 @@ function sqlInit($sqlInfo, $tabletime, $tablelist) {
 }
 function sqlExec($sqlInfo, $command) {
   $conn = mysqli_connect($sqlInfo["host"], $sqlInfo["user"], $sqlInfo["pwd"], $sqlInfo["db"]);
-  if (mysqli_connect_errno($conn)) {
+  if (!$conn) {
     echo "连接到 MySQL 服务器失败：" . mysqli_connect_error();
     return False;
   }
@@ -71,21 +72,44 @@ function handlePage($pageHtml) {
   }
   return $content;
 }
-function showPage($pageCont,$installpath) {
+function showPage($pageCont, $installpath) {
+    $len = count($pageCont);
+    $feed = new RSS();
+    $feed->title = 'Keylol News';
+    $feed->link = 'https://keylol.com/forum.php?mod=guide&amp;view=newthread';
+    $feed->description = 'Keylol 新帖监控';
+    for ($i=$len-1;$i>=0;$i--) {
+        $item = new RSSItem();
+        $item->title = urldecode($pageCont[$i][1]);
+        $item->link = 'https://'.$_SERVER['HTTP_HOST'].$installpath.'/page.php?tid='.$pageCont[$i][0];
+        $item->setPubDate(urldecode($pageCont[$i][5]));
+        if ($pageCont[$i][4]) {
+            $item->description = urldecode($pageCont[$i][4]);
+        }
+        else {
+            $item->description = "";
+        }
+        $item->addTag('category', urldecode($pageCont[$i][2]));
+        $item->addTag('author', urldecode($pageCont[$i][3]));
+        $feed->addItem($item);
+    }
+    echo $feed->serve();
+}
+function showPageOld($pageCont,$installpath) {
     $len = count($pageCont);
     $top = '<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
   <channel>
-    <title>SteamCN New</title>
-    <link>https://steamcn.com/forum.php?mod=guide&amp;view=newthread</link>
+    <title>Keylol News</title>
+    <link>https://keylol.com/forum.php?mod=guide&amp;view=newthread</link>
     <description>Recent</description>
     <generator>sffxzzp</generator>
     <lastBuildDate>'.date(DATE_RFC822).'</lastBuildDate>
     <ttl>1</ttl>
     <image>
-      <url>https://steamcn.com/static/image/common/logo_88_31.gif</url>
-      <title>SteamCN</title>
-      <link>https://steamcn.com/</link>
+      <url>https://keylol.com/static/image/common/logo_88_31.gif</url>
+      <title>Keylol</title>
+      <link>https://keylol.com/</link>
     </image>';
     $mid = '';
     for ($i=$len-1;$i>=0;$i--) {

@@ -1,8 +1,8 @@
 <?php
-$db = 'Database';
-$host = 'Database_IP';
-$user = 'DB_UserName';
-$pwd = 'DB_PassWord';
+$db = getenv('MYSQLDATABASE');
+$host = getenv('MYSQLHOST').':'.getenv('MYSQLPORT');
+$user = getenv('MYSQLUSER');
+$pwd = getenv('MYSQLPASSWORD');
 //---------------
 $prefix = 'stcn_';
 $tabletime = $prefix.'time';
